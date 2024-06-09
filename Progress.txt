@@ -1,0 +1,15 @@
+http://tracker.mywaifu.best
+
+Created a udp request function hat will send udp connection request to the torrent url server
+Got the response
+Now objective is to parse the response and store the connection id
+
+parsed the connection response 
+
+Now I have to send a announce request but for that I need a info hash , I need a complete info from torrent file 
+{was using a hardcoded url , Ig I have to use to parse the torrent file using js/py}
+
+I made a json file using py and getting all the information through that 
+
+till infoHash done 
+next files 
