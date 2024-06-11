@@ -4,15 +4,15 @@
  */
 package com.spandan.bittorrent;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
+
 
 /**
  *
@@ -84,7 +84,7 @@ public class Peers {
     }
     
     
-    public static byte[] createAnnounceReq(String info)throws Exception{
+    public static byte[] createAnnounceReq(Map<String,Object> tParser)throws Exception{
         
         System.out.println("Creating Announce Request...");
         ByteBuffer bb = ByteBuffer.allocate(98);
@@ -103,8 +103,11 @@ public class Peers {
         Peers.announceTransactionId = transId;
         
         //infoHash
-        String infoHash = Utils.encrypString(info);
-        byte[] infoHashByte = infoHash.getBytes("UTF-8");
+        String info = tParser.get("info").toString();
+        
+        byte[] infoHashByte = Utils.getSHA1Hash(info);
+        
+        System.out.println("\ninfoHashByte: "+infoHashByte);
         bb.put(16,infoHashByte);
                
         //peer id
@@ -116,7 +119,7 @@ public class Peers {
         bb.put(56,downloadedByte);
         
         //left 
-        long totalSize = Utils.size();
+        long totalSize = Utils.size(tParser);
         bb.putLong(64,totalSize);
         
         //uploaded
@@ -205,19 +208,16 @@ public class Peers {
     public static void getPeers(String torrentFilePath) throws Exception {
         DatagramSocket ds = null;
         
-        
-        ObjectMapper objectMapper = new ObjectMapper(); 
-        JsonNode jsonNode = objectMapper.readTree(new File(torrentFilePath)); 
+        Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
         
         //null is returned in case of error 
-        String announce_url = Utils.extractHostnameHelper(jsonNode.get("announce").asText());
-        
-        
-        JsonNode infoNode = jsonNode.get("info");
-        String info = objectMapper.writeValueAsString(infoNode); 
-        
+        String announce_url = Utils.extractHostname(tParser.get("announce").toString());    
+        int port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString()));
+        String infoNode = tParser.get("info").toString();
+              
+        System.out.println(announce_url);
         announce_url = "tracker.opentrackr.org";
-        int port = 1337;
+        port = 1337;
         
         System.out.println("announce url: "+announce_url);
         System.out.println("port: "+port);
@@ -237,7 +237,7 @@ public class Peers {
             
             if(connResp!=0){
                 
-                byte[] announceBuffer = createAnnounceReq(info);
+                byte[] announceBuffer = createAnnounceReq(tParser);
                  InetAddress addr = InetAddress.getByName(announce_url);            
                 DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
                 
