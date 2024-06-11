@@ -13,3 +13,5 @@ I made a json file using py and getting all the information through that
 
 till infoHash done 
 next files 
+
+Found replacement for the json file refactored the code , but the issue still remains not getting any ip from announce response 
