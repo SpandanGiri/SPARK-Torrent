@@ -1,5 +1,5 @@
 
-package com.spandan.bittorrent;
+package com.spark.bittorrent;
 
 import java.io.*; 
 import java.net.MalformedURLException;

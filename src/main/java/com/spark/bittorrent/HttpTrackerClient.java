@@ -1,4 +1,4 @@
-package com.spandan.bittorrent;
+package com.spark.bittorrent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

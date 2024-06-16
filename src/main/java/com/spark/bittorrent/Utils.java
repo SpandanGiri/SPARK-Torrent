@@ -1,5 +1,5 @@
 
-package com.spandan.bittorrent;
+package com.spark.bittorrent;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -14,7 +14,7 @@ import java.util.logging.*;
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.BencodeInputStream;
 import com.dampcake.bencode.Type;
-import static com.spandan.bittorrent.Test.bytesToHex;
+import static com.spark.bittorrent.Test.bytesToHex;
 import com.turn.ttorrent.bcodec.BDecoder;
 import com.turn.ttorrent.bcodec.BEValue;
 import com.turn.ttorrent.bcodec.BEncoder;
