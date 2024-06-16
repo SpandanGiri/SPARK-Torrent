@@ -15,3 +15,6 @@ till infoHash done
 next files 
 
 Found replacement for the json file refactored the code , but the issue still remains not getting any ip from announce response 
+
+Peer list got after using com.turn.ttorrent package
+Working on http and announce-list support
