@@ -14,7 +14,12 @@ import java.util.logging.*;
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.BencodeInputStream;
 import com.dampcake.bencode.Type;
+import static com.spandan.bittorrent.Test.bytesToHex;
+import com.turn.ttorrent.bcodec.BDecoder;
+import com.turn.ttorrent.bcodec.BEValue;
+import com.turn.ttorrent.bcodec.BEncoder;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.List;
 
@@ -66,23 +71,45 @@ public class Utils {
     }
     
     //hash string in sha1    
-    public static byte[] getSHA1Hash(String input) {
+    public static byte[] getSHA1Hash(byte[] input) {
         try {
-            // getInstance() method is called with algorithm SHA-1
+           
             MessageDigest md = MessageDigest.getInstance("SHA-1");
-
-            // digest() method is called
-            // to calculate message digest of the input string
-            // returned as array of byte
-            byte[] messageDigest = md.digest(input.getBytes());
-
-            return messageDigest;
+            return md.digest(input);          
             
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
+    public static byte[] getInfoHash(String torrentFilePath) throws Exception{
+            
+            String infoFilePath = "info.txt";
+
+            // Read the torrent file
+            FileInputStream torrentInputStream = new FileInputStream(torrentFilePath);
+            byte[] torrentData = torrentInputStream.readAllBytes();
+            torrentInputStream.close();
+
+            // Decode the torrent file
+            
+            Map<String, BEValue> torrentMap = BDecoder.bdecode(new ByteArrayInputStream(torrentData)).getMap();
+            
+            // Extract the 'info' dictionary
+            BEValue infoValue = torrentMap.get("info");
+            Map<String, BEValue> infoMap = infoValue.getMap();
+            
+
+            // Bencode the 'info' dictionary
+            ByteArrayOutputStream encodedInfoStream = new ByteArrayOutputStream();
+            BEncoder.bencode(infoValue, encodedInfoStream);
+            byte[] encodedInfo = encodedInfoStream.toByteArray();
+            
+            byte[] infoHash = Utils.getSHA1Hash(encodedInfo);
+            System.out.println("Info Hash: " + bytesToHex(infoHash));
+            return infoHash;
+    }
+    
     public static byte[] genId()throws Exception{
         
         //creating a random 20 byte     
@@ -118,20 +145,25 @@ public class Utils {
         return size;
     }
     
-//    public static long size() throws Exception{
-//        ObjectMapper objectMapper = new ObjectMapper(); 
-//        JsonNode jsonNode = objectMapper.readTree(new File(torrentFilePath)); 
-//        JsonNode infoNode = jsonNode.get("info");
-//        JsonNode filesNode = infoNode.get("files");
-//        
-//        long totalSize = 0;
-//        if (filesNode.isArray()){
-//            for(JsonNode fileNode : filesNode){
-//                totalSize += fileNode.get("length").asLong();
-//            }
-//        }
-//        return totalSize;
-//    }
+    
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                                 + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+    
+    public static String IpFromBytes(byte[] ipByte){
+        String ip = (ipByte[0] & 0xFF) + "." +
+                     (ipByte[1] & 0xFF) + "." +
+                     (ipByte[2] & 0xFF) + "." +
+                     (ipByte[3] & 0xFF);
+        
+        return ip;
+    }
     
     
 }

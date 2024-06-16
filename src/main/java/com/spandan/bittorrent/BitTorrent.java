@@ -11,12 +11,10 @@ public class BitTorrent {
     
 
     public static void main(String[] args)throws Exception{
-        //Peers peers = new Peers();
+        
         String torrentFilePath = "torrentFIles/big-buck-bunny.torrent";
-        
-        int port = 1337;
-        int port2 = 6969; 
-        
+        String torrentFilePath2 = "torrentFIles/edubuntu-23.10-desktop-amd64.iso.torrent";
+         
         Peers.getPeers(torrentFilePath);
     
     }

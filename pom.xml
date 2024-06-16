@@ -20,6 +20,15 @@
         <artifactId>bencode</artifactId>
         <version>1.4.1</version>
     </dependency>
+    
+<dependency>
+    <groupId>com.turn</groupId>
+    <artifactId>ttorrent</artifactId>
+    <version>1.4</version>
+    <type>jar</type>
+</dependency>
+
+
 
 
 </dependencies>

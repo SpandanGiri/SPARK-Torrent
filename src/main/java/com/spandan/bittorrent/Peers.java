@@ -4,15 +4,11 @@
  */
 package com.spandan.bittorrent;
 
-import java.io.File;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
-
+import java.util.*;
 
 /**
  *
@@ -23,9 +19,11 @@ public class Peers {
     public static int connectionId;
     public static int connectionTransactionId;
     
+    
     public static byte[] createReqCon(){
         ByteBuffer bb = ByteBuffer.allocate(16);
 
+        //protocol id
         bb.putLong(0, 0x41727101980L);
         
         //action id
@@ -43,13 +41,7 @@ public class Peers {
         //transcation id
         bb.putInt(12,randomTransactionInt);
         
-        byte[] buffer = bb.array();
-
-        for (byte b : buffer) {
-            System.out.print(String.format("%02x", b));
-        }
-    
-        return buffer;
+        return bb.array();    
         
     } 
     
@@ -71,20 +63,15 @@ public class Peers {
         int transId = ByteBuffer.wrap(transByte).getInt();
         int connId = ByteBuffer.wrap(connByte).getInt();
                     
-        System.out.println("\nactionId: "+ actionId);
-        System.out.println("transactionId: "+ transId);
-        System.out.println("connId: "+ connId);
-
         if(Peers.connectionTransactionId == transId){
             Peers.connectionId = connId;           
             return connId;
-        }
-        
+        }    
         return 0;
     }
     
     
-    public static byte[] createAnnounceReq(Map<String,Object> tParser)throws Exception{
+    public static byte[] createAnnounceReq(Map<String,Object> tParser,String torrentFilePath)throws Exception{
         
         System.out.println("Creating Announce Request...");
         ByteBuffer bb = ByteBuffer.allocate(98);
@@ -103,13 +90,14 @@ public class Peers {
         Peers.announceTransactionId = transId;
         
         //infoHash
-        String info = tParser.get("info").toString();
+        Object infoObj = tParser.get("info");
+        Map<String , Object> infoMap = new HashMap();
+        infoMap.put("info", infoObj);
         
-        byte[] infoHashByte = Utils.getSHA1Hash(info);
-        
-        System.out.println("\ninfoHashByte: "+infoHashByte);
+        byte[] infoHashByte = Utils.getInfoHash(torrentFilePath);
+ 
         bb.put(16,infoHashByte);
-               
+           
         //peer id
         byte[] peerIdByte = Utils.genId();
         bb.put(36,peerIdByte);
@@ -153,10 +141,9 @@ public class Peers {
         return bb.array();
     }
     
-    public static int parseAnnounceResponse(DatagramPacket receivePacket){
+    public static List parseAnnounceResponse(DatagramPacket receivePacket){
         
-        System.out.println("Parsing Announce Response...");
-        
+        System.out.println("Parsing Announce Response...");  
         byte[] receiveByte = receivePacket.getData();
         
         for (byte b : receiveByte) {
@@ -168,8 +155,29 @@ public class Peers {
         byte intervalByte[] = Arrays.copyOfRange(receiveByte,8,12);
         byte leechersByte[] = Arrays.copyOfRange(receiveByte,12,16);
         byte seedersByte[] = Arrays.copyOfRange(receiveByte, 16, 20);
-        byte Ip1Byte[] = Arrays.copyOfRange(receiveByte, 20, 24);
-//        System.out.println("169");
+        
+        int ipInfoLength = receivePacket.getLength()-20;
+        System.out.println("ipInfoLength: "+ipInfoLength);
+        
+        List<List> peerList = new ArrayList<>(); 
+        
+        //Iterating the buffer and adding the ip and port to the peerList
+        for(int i=20;i<=ipInfoLength;i=i+6){
+            List<String> ipList = new ArrayList<>(); 
+            byte ipByte[] = Arrays.copyOfRange(receiveByte, i, i+4);
+            byte portByte[] = Arrays.copyOfRange(receiveByte, i+4, i+6);    
+            
+            String ip = Utils.IpFromBytes(ipByte);
+            String port = String.valueOf(ByteBuffer.wrap(portByte).getShort() & 0xFFFF);
+            
+            ipList.add(ip);
+            ipList.add(port);
+            
+            peerList.add(ipList);
+        }
+        
+            
+        
         byte IpPort[] = Arrays.copyOfRange(receiveByte, 24, 26);
         
         int actionId = ByteBuffer.wrap(actionByte).getInt();
@@ -177,8 +185,6 @@ public class Peers {
         int interval = ByteBuffer.wrap(intervalByte).getInt();
         int leechers = ByteBuffer.wrap(leechersByte).getInt();
         int seeders = ByteBuffer.wrap(seedersByte).getInt();
-        int ip1 = ByteBuffer.wrap(Ip1Byte).getInt();
-//        int ipPort1 = ByteBuffer.wrap(IpPort).getInt();
         
         
         System.out.println("\nactionId: "+ actionId);
@@ -186,14 +192,13 @@ public class Peers {
         System.out.println("interval: "+ interval);
         System.out.println("leechers: "+ leechers);
         System.out.println("seeders: "+ seeders);
-        System.out.println("ip1: "+ ip1);
-//        System.out.println("port1: "+ ipPort1);
+        
         
         if(Peers.announceTransactionId == transId){
-            return 1;
+            return peerList;
         }
         
-        return 0;
+        return List.of();
     }
     
     public static void UdpSend(DatagramSocket ds, String url, int port) throws Exception {
@@ -210,6 +215,8 @@ public class Peers {
         
         Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
         
+        System.out.println("announce-list: "+ tParser.get("announce-list"));
+        
         //null is returned in case of error 
         String announce_url = Utils.extractHostname(tParser.get("announce").toString());    
         int port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString()));
@@ -217,6 +224,7 @@ public class Peers {
               
         System.out.println(announce_url);
         announce_url = "tracker.opentrackr.org";
+        //announce_url = "torrent.ubuntu.com";
         port = 1337;
         
         System.out.println("announce url: "+announce_url);
@@ -224,6 +232,7 @@ public class Peers {
         
         try {
             ds = new DatagramSocket();
+            //https socket required 
                       
             UdpSend(ds, announce_url, port);
 
@@ -237,20 +246,22 @@ public class Peers {
             
             if(connResp!=0){
                 
-                byte[] announceBuffer = createAnnounceReq(tParser);
+                byte[] announceBuffer = createAnnounceReq(tParser,torrentFilePath);
                  InetAddress addr = InetAddress.getByName(announce_url);            
                 DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
                 
                 ds.send(announceRequestPacket); 
                 
-                byte[] AnnBuf = new byte[100];
+                byte[] AnnBuf = new byte[500];
                 
                 DatagramPacket receiveAnnPacket = new DatagramPacket(AnnBuf,AnnBuf.length);
                 System.out.println("\nWaiting for Announce response...");
                 ds.receive(receiveAnnPacket);     
                 
-                int a = parseAnnounceResponse(receiveAnnPacket);
-                System.out.println(a);
+                List peerList = parseAnnounceResponse(receiveAnnPacket);
+                
+                System.out.println(peerList);
+                System.out.println(peerList.size());
             }  
             else{
                 System.out.println("Connection Error!!!");
