@@ -1,0 +1,26 @@
+
+j
+java:S2095!"MUse try-with-resources or close this "FileInputStream" in a "finally" clause.(«ş«ğ8ê§õ‚2
+[
+java:S1854"@Remove this useless assignment to local variable "infoFilePath".(Ê®®€ùÿÿÿÿ
+Q
+java:S1854+";Remove this useless assignment to local variable "infoMap".(Ì¼íæ
+L
+java:S1481"1Remove this unused "infoFilePath" local variable.(Ê®®€ùÿÿÿÿ
+B
+java:S1481+",Remove this unused "infoMap" local variable.(Ì¼íæ
+@	java:S1066"+Replace this use of System.out by a logger.(Ä†¸ã
+P	java:S125G"<This block of commented-out lines of code should be removed.(öë¿
+Q	java:S125J"<This block of commented-out lines of code should be removed.(¤ÒÚ
+P	java:S125d"<This block of commented-out lines of code should be removed.(öë¿
+X
+java:S1128";Remove this unused import 'java.net.MalformedURLException'.(ªËŞˆ8§õ‚2
+K
+java:S1128")Remove this unused import 'java.net.URL'.(ñìÁ„üÿÿÿÿ8§õ‚2
+R
+java:S1128"0Remove this unused import 'java.io.IOException'.(ªº»Úıÿÿÿÿ8§õ‚2
+N
+java:S1128	"1Remove this unused import 'com.dampcake.bencode'.(¶òà8§õ‚2
+[
+java:S1128
+">Remove this unused import 'java.nio.charset.StandardCharsets'.(ï˜ŞÛ8¦§õ‚2
