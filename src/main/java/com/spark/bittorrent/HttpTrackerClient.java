@@ -18,10 +18,10 @@ public class HttpTrackerClient {
 
     public static List<List> getPeers(String trackerUrl) {
         try {
-            //trackerUrl = "http://torrent.ubuntu.com:6969/announce";
-            trackerUrl = "wss://wstracker.online";
-            //String infoHash = "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c";
-            String infoHash = "c99047a907bf9941365c6a1974bc142a181460ad";
+            trackerUrl = "http://torrent.ubuntu.com:6969/announce";
+            //trackerUrl = "wss://wstracker.online";
+            String infoHash = "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c";
+            //String infoHash = "c99047a907bf9941365c6a1974bc142a181460ad";
             String peerId = "-TR2940-6wfG2wk6wFOu";  // Example peer ID, use a unique one for your client
             int port = 6881;
             long uploaded = 0;
