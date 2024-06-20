@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.spark.bittorrent;
 
 import java.net.DatagramPacket;
@@ -175,11 +172,8 @@ public class Peers {
             
             peerList.add(ipList);
         }
-        
-            
-        
-        byte IpPort[] = Arrays.copyOfRange(receiveByte, 24, 26);
-        
+               
+        byte IpPort[] = Arrays.copyOfRange(receiveByte, 24, 26);  
         int actionId = ByteBuffer.wrap(actionByte).getInt();
         int transId = ByteBuffer.wrap(transByte).getInt();
         int interval = ByteBuffer.wrap(intervalByte).getInt();
@@ -247,7 +241,7 @@ public class Peers {
             if(connResp!=0){
                 
                 byte[] announceBuffer = createAnnounceReq(tParser,torrentFilePath);
-                 InetAddress addr = InetAddress.getByName(announce_url);            
+                InetAddress addr = InetAddress.getByName(announce_url);            
                 DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
                 
                 ds.send(announceRequestPacket); 
