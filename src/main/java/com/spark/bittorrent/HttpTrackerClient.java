@@ -1,21 +1,27 @@
+
 package com.spark.bittorrent;
 
+import com.turn.ttorrent.bcodec.BDecoder;
+import com.turn.ttorrent.bcodec.BEValue;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import com.dampcake.bencode.Bencode;
-import com.dampcake.bencode.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 
 public class HttpTrackerClient {
 
-    public static void main(String[] args) {
+    public static List<List> getPeers(String trackerUrl) {
         try {
-            String trackerUrl = "http://torrent.ubuntu.com:6969/announce";
-            String infoHash = "c99047a907bf9941365c6a1974bc142a181460ad";
+            trackerUrl = "http://torrent.ubuntu.com:6969/announce";
+            //trackerUrl = "wss://wstracker.online";
+            String infoHash = "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c";
+            //String infoHash = "c99047a907bf9941365c6a1974bc142a181460ad";
             String peerId = "-TR2940-6wfG2wk6wFOu";  // Example peer ID, use a unique one for your client
             int port = 6881;
             long uploaded = 0;
@@ -26,7 +32,7 @@ public class HttpTrackerClient {
             String encodedPeerId = URLEncoder.encode(peerId, StandardCharsets.ISO_8859_1.toString());
 
             String urlString = String.format(
-                    "%s?info_hash=%s&peer_id=%s&port=%d&uploaded=%d&downloaded=%d&left=%d&compact=1",
+                    "%s?info_hash=%s&peer_id=%s&port=%d&uploaded=%d&downloaded=%d&left=%d",
                     trackerUrl,
                     encodedInfoHash,
                     encodedPeerId,
@@ -36,7 +42,7 @@ public class HttpTrackerClient {
                     left
             );
 
-            System.out.println("Request URL: " + urlString);  // Print the URL for debugging
+            System.out.println("Request URL: " + urlString);  
 
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -55,33 +61,37 @@ public class HttpTrackerClient {
 
             System.out.println("Tracker Response: " + content.toString());
 
-            // Parse the response using Bencode
-            Bencode bencode = new Bencode();
-            Map<String, Object> response = bencode.decode(content.toString().getBytes(StandardCharsets.ISO_8859_1), Type.DICTIONARY);
+            // Parse the response using BDecoder
+            
+            ByteArrayInputStream responseStream = new ByteArrayInputStream(content.toString().getBytes(StandardCharsets.ISO_8859_1));
+            BDecoder bDecoder = new BDecoder(responseStream);
+            Map<String, BEValue> response = bDecoder.bdecode().getMap();
+ 
+            List<BEValue> peers = response.get("peers").getList();
+            List<List> peerList = new ArrayList();
 
-            // Extract peer information
-            if (response.containsKey("peers")) {
-                Object peersObj = response.get("peers");
-                if (peersObj instanceof List) {
-                    List<Map<String, Object>> peers = (List<Map<String, Object>>) peersObj;
-                    for (Map<String, Object> peer : peers) {
-                        String peerIp = new String((byte[]) peer.get("ip"), StandardCharsets.ISO_8859_1);
-                        int peerPort = ((Number) peer.get("port")).intValue();
-                        System.out.println("Peer IP: " + peerIp + ", Peer Port: " + peerPort);
-                    }
-                } else if (peersObj instanceof byte[]) {
-                    byte[] peersBytes = (byte[]) peersObj;
-                    for (int i = 0; i < peersBytes.length; i += 6) {
-                        String peerIp = (peersBytes[i] & 0xFF) + "." + (peersBytes[i + 1] & 0xFF) + "." + (peersBytes[i + 2] & 0xFF) + "." + (peersBytes[i + 3] & 0xFF);
-                        int peerPort = ((peersBytes[i + 4] & 0xFF) << 8) | (peersBytes[i + 5] & 0xFF);
-                        System.out.println("Peer IP: " + peerIp + ", Peer Port: " + peerPort);
-                    }
-                }
+            for(BEValue peer:peers){
+                Map<String, BEValue> peerMap = peer.getMap();
+                String ip = peerMap.get("ip").getString();
+                String peerPort = peerMap.get("port").getString();      
+                
+                List<String> ipList = new ArrayList();
+                ipList.add(ip);
+                ipList.add(peerPort);
+                
+                peerList.add(ipList);
+                               
             }
+            System.out.println(peerList);
+            return peerList;
+           
+        }
 
-        } catch (Exception e) {
+         catch (Exception e) {
             e.printStackTrace();
         }
+        
+        return List.of();
     }
 
     // Utility function to convert hex string to byte array
