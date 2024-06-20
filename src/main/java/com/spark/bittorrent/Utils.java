@@ -84,8 +84,6 @@ public class Utils {
 
     public static byte[] getInfoHash(String torrentFilePath) throws Exception{
             
-            String infoFilePath = "info.txt";
-
             // Read the torrent file
             FileInputStream torrentInputStream = new FileInputStream(torrentFilePath);
             byte[] torrentData = torrentInputStream.readAllBytes();
@@ -95,11 +93,10 @@ public class Utils {
             
             Map<String, BEValue> torrentMap = BDecoder.bdecode(new ByteArrayInputStream(torrentData)).getMap();
             
+            
             // Extract the 'info' dictionary
             BEValue infoValue = torrentMap.get("info");
-            Map<String, BEValue> infoMap = infoValue.getMap();
             
-
             // Bencode the 'info' dictionary
             ByteArrayOutputStream encodedInfoStream = new ByteArrayOutputStream();
             BEncoder.bencode(infoValue, encodedInfoStream);
