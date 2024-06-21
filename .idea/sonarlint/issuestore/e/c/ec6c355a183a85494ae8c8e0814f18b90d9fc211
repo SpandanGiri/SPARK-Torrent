@@ -1,0 +1,21 @@
+
+’
+java:S1104"VMake serverPort a static final constant or non-public and provide accessors if needed.(‚‚Ú•J$3dba35fc-2c24-4f69-8d5a-6fba780205e9
+—
+java:S1104"VMake clientPort a static final constant or non-public and provide accessors if needed.(„‡ˆ‚şÿÿÿÿJ$ad488c55-db7d-4f2d-a17b-4c22a7b65720
+˜
+java:S1104	"WMake buffer_size a static final constant or non-public and provide accessors if needed.(ŞÃ‚™ÿÿÿÿÿJ$51af6ceb-afb4-4655-93ee-4fe9f585e8a4
+l
+java:S1444"0Make this "public static serverPort" field final(‚‚Ú•J$73e2248e-b3c3-4658-9e8e-9887c2014c9c
+q
+java:S1444"0Make this "public static clientPort" field final(„‡ˆ‚şÿÿÿÿJ$0ad91063-1ff9-4c54-abda-b56f28e8d866
+r
+java:S1444	"1Make this "public static buffer_size" field final(ŞÃ‚™ÿÿÿÿÿJ$d8ac431a-73f3-4a5b-878e-28605cc5efca
+—
+java:S3008	"VRename this field "buffer_size" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŞÃ‚™ÿÿÿÿÿJ$c2005b8c-3ab2-4767-8ee2-844031232fb0
+€
+java:S1854"DRemove this useless assignment to local variable "torrentFilePath2".(ú®°ûJ$ebb38678-ea7c-4dda-add2-cb944bcf6326
+q
+java:S1481"5Remove this unused "torrentFilePath2" local variable.(ú®°ûJ$ef4845ca-eaac-4f39-9b19-c3f8bb931b18
+G
+java:S1128"%Remove this unused import 'java.nio'.(‚Æƒÿÿÿÿÿ8¦Œã‚2

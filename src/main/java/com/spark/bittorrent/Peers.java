@@ -9,7 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.*;
-
+import java.net.SocketTimeoutException;
 /**
  *
  * @author Spandan
@@ -214,65 +214,147 @@ public class Peers {
         DatagramSocket ds = null;
         
         Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
-        
-        System.out.println("announce-list: "+ tParser.get("announce-list"));
-        
-        //null is returned in case of error 
+
+        // Declare announceArray and portNumbers outside the loop
+        String[] announceArray = null;
+        List<Integer> portNumbers = new ArrayList<>();
+        List<String> processedUrls = new ArrayList<>();
+
+        // Retrieve the "announce-list" from the map
+        Object announceListObject = tParser.get("announce-list");
+
+        if (announceListObject instanceof List) {
+            List<List<String>> announceList = (List<List<String>>) announceListObject;
+            List<String> flattenedList = new ArrayList<>();
+
+            // Flatten the nested list structure
+            for (List<String> innerList : announceList) {
+                flattenedList.addAll(innerList);
+            }
+
+            // Process the list to remove prefixes and extract port numbers
+
+            for (String url : flattenedList) {
+                // Remove the prefix
+                if (url.startsWith("udp://")) {
+                    url = url.substring(6);
+                } else if (url.startsWith("wss://")) {
+                    url = url.substring(6);
+                }
+
+                // Extract and remove the port number
+                int colonIndex = url.lastIndexOf(':');
+                if (colonIndex != -1 && colonIndex < url.length() - 1) {
+                    String portStr = url.substring(colonIndex + 1);
+                    try {
+                        int port = Integer.parseInt(portStr);
+                        portNumbers.add(port);
+                        url = url.substring(0, colonIndex);
+                        processedUrls.add(url);
+                    } catch (NumberFormatException e) {
+                        // If the part after the colon is not a number, skip this URL
+                    }
+                } else {
+                    // If no port number is present, skip this URL
+                }
+            }
+
+            // Convert the processed list to an array of strings
+            announceArray = processedUrls.toArray(new String[0]);
+        } else {
+            System.out.println("The announce-list is not of the expected type.");
+        }
+
+        // Print the announce URLs
+//        System.out.println("Announce URLs with proper port Numbers:");
+//        for (String announce : announceArray) {
+//            System.out.println(announce);
+//        }
+
+        // Print the port numbers
+//        System.out.println("Port Numbers:");
+//        for (int port : portNumbers) {
+//            System.out.println(port);
+//        }
+
+            //null is returned in case of error
         String announce_url = Utils.extractHostname(tParser.get("announce").toString());    
         int port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString()));
         String infoNode = tParser.get("info").toString();
               
-        System.out.println(announce_url);
-        announce_url = "tracker.opentrackr.org";
-        //announce_url = "torrent.ubuntu.com";
-        port = 1337;
-        
-        System.out.println("announce url: "+announce_url);
-        System.out.println("port: "+port);
-        
-        try {
-            ds = new DatagramSocket();
-            //https socket required 
-                      
-            UdpSend(ds, announce_url, port);
+//        System.out.println(announce_url);
+//
+//        announce_url = "tracker.opentrackr.org";
+//        //announce_url = "torrent.ubuntu.com";
+//        port = 1337;
+//
+//        System.out.println(announceArray[1]);
 
-            byte[] ConnBuf = new byte[32];
-            DatagramPacket receiveConnPacket = new DatagramPacket(ConnBuf, ConnBuf.length);
-            System.out.println("\nWaiting for Connection response...");
-            ds.receive(receiveConnPacket);          
-            
-            int connResp = parseConnResp(receiveConnPacket);
-            System.out.println("connResp: "+connResp);
-            
-            if(connResp!=0){
-                
-                byte[] announceBuffer = createAnnounceReq(tParser,torrentFilePath);
-                 InetAddress addr = InetAddress.getByName(announce_url);            
-                DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
-                
-                ds.send(announceRequestPacket); 
-                
-                byte[] AnnBuf = new byte[500];
-                
-                DatagramPacket receiveAnnPacket = new DatagramPacket(AnnBuf,AnnBuf.length);
-                System.out.println("\nWaiting for Announce response...");
-                ds.receive(receiveAnnPacket);     
-                
-                List peerList = parseAnnounceResponse(receiveAnnPacket);
-                
-                System.out.println(peerList);
-                System.out.println(peerList.size());
-            }  
-            else{
-                System.out.println("Connection Error!!!");
+        //loop start
+        for (int i = 0;i<portNumbers.size();i++)
+        {
+            announce_url = announceArray[i];
+            port = portNumbers.get(i);
+
+            System.out.println("Sl No: " + (i+1) + " announce url: "+announce_url);
+            System.out.println("port: "+port);
+            try {
+                ds = new DatagramSocket();
+
+                UdpSend(ds, announce_url, port);
+
+                ds.setSoTimeout(5000);
+
+                byte[] ConnBuf = new byte[32];
+                DatagramPacket receiveConnPacket = new DatagramPacket(ConnBuf, ConnBuf.length);
+                System.out.println("\nWaiting for Connection response...");
+                System.out.println("\nAutomatic Time-out after 5 secs");
+
+//                ds.receive(receiveConnPacket);
+                try {
+                    // Attempt to receive a packet
+                    ds.receive(receiveConnPacket);
+                    System.out.println("Packet Received");
+                } catch (SocketTimeoutException e) {
+                    // Handle the timeout case
+                    System.out.println("Timeout reached: No packet received within 5 seconds.");
+                } finally {
+                    // Close the DatagramSocket
+//                    ds.close();
+                }
+                int connResp = parseConnResp(receiveConnPacket);
+                System.out.println("\nconnResp: " + connResp);
+
+                if (connResp != 0) {
+
+                    byte[] announceBuffer = createAnnounceReq(tParser, torrentFilePath);
+                    InetAddress addr = InetAddress.getByName(announce_url);
+                    DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
+
+                    ds.send(announceRequestPacket);
+
+                    byte[] AnnBuf = new byte[500];
+
+                    DatagramPacket receiveAnnPacket = new DatagramPacket(AnnBuf, AnnBuf.length);
+                    System.out.println("\nWaiting for Announce response...");
+                    ds.receive(receiveAnnPacket);
+
+                    List peerList = parseAnnounceResponse(receiveAnnPacket);
+
+                    System.out.println(peerList);
+                    System.out.println(peerList.size());
+                } else {
+                    System.out.println("Connection Error!!!");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (ds != null) {
+                    ds.close();
+                }
             }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (ds != null) {
-                ds.close();
-            }
-        }  
+            //loop
+        }
     }
 }

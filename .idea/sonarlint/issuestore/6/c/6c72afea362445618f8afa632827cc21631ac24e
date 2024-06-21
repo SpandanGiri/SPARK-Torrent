@@ -1,0 +1,102 @@
+
+“	java:S117µ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‚ûÜH8 ÒÖ÷‚2J$913aceb8-0b80-4342-b138-14274c28bfdd
+™	java:S117™"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(²óŠåùÿÿÿÿ8 ÒÖ÷‚2J$b2fc1682-ddd6-4291-979b-e1a9a5227350
+™	java:S117´"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(œœ÷Æûÿÿÿÿ8ŒÛ£ø‚2J$a93027dc-0b5a-494c-b412-d36529904024
+™	java:S117Ğ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ş¸â›ùÿÿÿÿ8˜ºø‚2J$e16b6d29-c063-439f-b264-ae3387a74f92
+©
+java:S1104"aMake announceTransactionId a static final constant or non-public and provide accessors if needed.(ìäåÜÿÿÿÿÿ8¢ÒÖ÷‚2J$7ad8143c-4246-41aa-9b33-da8de38db598
+ 
+java:S1104"XMake connectionId a static final constant or non-public and provide accessors if needed.(§åÕÃşÿÿÿÿ8¢ÒÖ÷‚2J$835d69a5-1f57-4744-a751-473c6f9b49e1
+¦
+java:S1104"cMake connectionTransactionId a static final constant or non-public and provide accessors if needed.(¼ñã‡8¢ÒÖ÷‚2J$e6793d83-8e4d-4397-9595-6a96cd63ab36
+~
+java:S1141º"5Extract this nested try block into a separate method.(¡»¢üùÿÿÿÿ8ÑÎ¦ø‚2J$e01889ed-caff-4b76-82f2-3526e2347ac9
+ƒ
+java:S1444";Make this "public static announceTransactionId" field final(ìäåÜÿÿÿÿÿ8¹Ÿë÷‚2J$353e3015-2a74-4024-a334-4c9c759f06e7
+z
+java:S1444"2Make this "public static connectionId" field final(§åÕÃşÿÿÿÿ8¬ÒÖ÷‚2J$6c1cf8a0-5755-43cb-b1fc-6a33aa8881b6
+€
+java:S1444"=Make this "public static connectionTransactionId" field final(¼ñã‡8¬ÒÖ÷‚2J$c53397a8-6b52-4a47-8722-002be5c7b2a2
+	java:S112Ì"FDefine and throw a dedicated exception instead of using a generic one.(ŸÁÒüÿÿÿÿ8¬ÒÖ÷‚2J$8d6f8075-e805-4098-a70f-a2a2862dfced
+w
+java:S3740^"/Provide the parametrized type for this generic.(œáæÚûÿÿÿÿ8­ÒÖ÷‚2J$7b85b7cd-deac-45f9-a4d2-cb8f6d65a826
+r
+java:S3740"/Provide the parametrized type for this generic.(ˆ“é8­ÒÖ÷‚2J$6e5c53e2-8f83-4c67-885c-9c7633f589a8
+x
+java:S3740¢"/Provide the parametrized type for this generic.(œÚƒûÿÿÿÿ8­ÒÖ÷‚2J$e236e3c5-19b7-48fc-b87b-adf5ab99f67b
+x
+java:S3740Ö"/Provide the parametrized type for this generic.(ù£Æøÿÿÿÿ8§ºø‚2J$540a5608-b28d-443f-8322-2c529c3a9e19
+}
+java:S1118":Add a private constructor to hide the implicit public one.(‹áí£8¸ÒÖ÷‚2J$3031cb2c-9fa4-4416-8cfd-3c0718e9c77f
+`
+java:S2119!"Save and re-use this "Random".(¼İÅf8¾ÒÖ÷‚2J$c9e47527-41e9-4041-bbd3-e923cf83ed73
+„
+java:S1854>"<Remove this useless assignment to local variable "actionId".(ÔéŠ¼øÿÿÿÿ8ÀÒÖ÷‚2J$a0e8b7ac-28e2-452a-8d17-5cc087ed5301
+r	java:S1065"+Replace this use of System.out by a logger.(Àƒ²Àùÿÿÿÿ8ÁÒÖ÷‚2J$9fe625b9-d775-4645-bd8c-85e3538f95dd
+r
+java:S11978"*Move the array designators [] to the type.(­Ûıƒıÿÿÿÿ8ÃÒÖ÷‚2J$fcafd4b3-15a3-40fa-b3cb-550bf77ce0db
+r
+java:S1197:"*Move the array designators [] to the type.(š Ùëùÿÿÿÿ8ÃÒÖ÷‚2J$cf67e0ad-5a6d-4866-9f7a-4270f7767984
+r
+java:S1197;"*Move the array designators [] to the type.(ş©ú·ùÿÿÿÿ8ÄÒÖ÷‚2J$ab96136b-5033-48bb-b45e-eeb4c8fca76f
+r
+java:S1197<"*Move the array designators [] to the type.(©å·³üÿÿÿÿ8ÅÒÖ÷‚2J$3d83472e-5a64-4628-8da1-9807b06c9f10
+u
+java:S1481>"-Remove this unused "actionId" local variable.(ÔéŠ¼øÿÿÿÿ8ÈÒÖ÷‚2J$5714fba8-3a84-4a32-a959-a06ea2a68870
+m	java:S106L"+Replace this use of System.out by a logger.(½ØŸá8ÌÒÖ÷‚2J$8a7ea7d9-87c6-46f6-9b6e-b270254f10a5
+`
+java:S2119V"Save and re-use this "Random".(¼İÅf8ÎÒÖ÷‚2J$3f77ef5f-2153-4d0e-ab72-dbbe7e9ba927
+s	java:S106‰"+Replace this use of System.out by a logger.(‚ÚÙùÿÿÿÿ8ØÒÖ÷‚2J$39b7bdda-bc87-450f-919b-054c5debaf3f
+s	java:S106‹"+Replace this use of System.out by a logger.(Àƒ²Àùÿÿÿÿ8ÙÒÖ÷‚2J$46471fed-5851-489a-a844-b85167f84bd0
+}
+java:S1854µ":Remove this useless assignment to local variable "IpPort".(‚ûÜH8ÜÒÖ÷‚2J$73a10afa-3903-41fb-9935-53ac0190c7a2
+s	java:S106’"+Replace this use of System.out by a logger.(¼Áâôıÿÿÿÿ8ŞÒÖ÷‚2J$c8a0d715-871a-4f01-9b1a-44e4f1dd4beb
+s	java:S106–"+Replace this use of System.out by a logger.(Àƒ²Àùÿÿÿÿ8ßÒÖ÷‚2J$5497e58a-ffea-430f-bda4-0e31ecc8d504
+s
+java:S1197š"*Move the array designators [] to the type.(…³¼Êıÿÿÿÿ8àÒÖ÷‚2J$ba57f8a3-2ca7-4430-9a3c-62f6c80c3152
+m
+java:S1197›"*Move the array designators [] to the type.(£¼”o8àÒÖ÷‚2J$0861b140-43ad-45d8-a27b-f6d39d775740
+n
+java:S1197œ"*Move the array designators [] to the type.(¸ä¥¶8âÒÖ÷‚2J$2b83f4a8-29da-455a-a2f5-20d66f619739
+s
+java:S1197"*Move the array designators [] to the type.(õÙ¹ÿÿÿÿÿ8âÒÖ÷‚2J$57490478-8463-44aa-a639-f2ffbcbf5665
+n	java:S106 "+Replace this use of System.out by a logger.(øãÎõ8äÒÖ÷‚2J$944c4060-67f1-4390-88df-6193ad83c925
+s
+java:S1197§"*Move the array designators [] to the type.(ˆ‹Á™øÿÿÿÿ8çÒÖ÷‚2J$f70873a9-3a5e-429f-9d96-de77a6eeb249
+s
+java:S1197¨"*Move the array designators [] to the type.(¥÷íâıÿÿÿÿ8èÒÖ÷‚2J$07b8ef24-633d-44be-a900-8ffade85de01
+m
+java:S1197µ"*Move the array designators [] to the type.(‚ûÜH8ëÒÖ÷‚2J$4ac9dcfd-adbb-456d-a78d-bc43fb62ae2b
+n
+java:S1481µ"+Remove this unused "IpPort" local variable.(‚ûÜH8ìÒÖ÷‚2J$80e7116c-2346-4351-a905-d3a3afc4f727
+m	java:S106¾"+Replace this use of System.out by a logger.(Øó 8íÒÖ÷‚2J$cf2335aa-b2bd-4779-8f3e-52ca4aa322f9
+s	java:S106¿"+Replace this use of System.out by a logger.(ìü·Çşÿÿÿÿ8ğÒÖ÷‚2J$0db996ce-6a60-4dd9-83ea-4231c48734e2
+n	java:S106À"+Replace this use of System.out by a logger.(Ù„ÓÏ8ñÒÖ÷‚2J$dc7f618c-829c-4db9-a10b-35dceefd3bb7
+s	java:S106Á"+Replace this use of System.out by a logger.(Œ§ğüÿÿÿÿ8òÒÖ÷‚2J$544a3562-5d47-4f86-a197-2d939aae7236
+n	java:S106Â"+Replace this use of System.out by a logger.(Ê¸€8òÒÖ÷‚2J$31ffee96-eca3-44ab-98cd-75ad51592100
+–	java:S100Ì"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ŸÁÒüÿÿÿÿ8õÒÖ÷‚2J$49dc8ad2-9adb-4734-a2d0-33b7945523d4
+–
+java:S3776Õ"RRefactor this method to reduce its Cognitive Complexity from 29 to the 15 allowed.(Ù”Öª8ÓÖ÷‚2J$7ca53414-c230-4db9-9e78-8d5c71b5b8b5
+–
+java:S1871ñ"MThis branch's code block is the same as the block for the branch on line 239.(şè§†ûÿÿÿÿ8‡ÓÖ÷‚2J$d03164af-ff70-414c-a45e-ba5efbce8615
+s	java:S106‰"+Replace this use of System.out by a logger.(å™éÍıÿÿÿÿ8ˆÓÖ÷‚2J$c4968a3b-980d-4210-8e8d-03525fcd14cc
+„	java:S125"<This block of commented-out lines of code should be removed.(´ıæğıÿÿÿÿ8·¤Úø‚2J$3d878674-9002-45c0-b151-754dd0e3b7c4
+„	java:S125“"<This block of commented-out lines of code should be removed.(£¡×øÿÿÿÿÿ8õĞÚø‚2J$797ff1aa-35fa-4707-af39-57f74f9b32ae
+v
+java:S1481›"-Remove this unused "infoNode" local variable.(ËÛˆûÿÿÿÿÿ8ˆÓÖ÷‚2J$03156469-cd5b-4519-8c93-9743b6f359e3
+~	java:S125"<This block of commented-out lines of code should be removed.(¼ç38ˆÓÖ÷‚2J$f49fbc34-bdcb-48bb-99c2-575f850c9b5c
+s	java:S106«"+Replace this use of System.out by a logger.(–ƒÙØûÿÿÿÿ8ˆÓÖ÷‚2J$9889c4a3-e171-4e56-998a-b22749e4145a
+s	java:S106¬"+Replace this use of System.out by a logger.(úÀ¤³üÿÿÿÿ8œÓÖ÷‚2J$bf047aed-56d9-4c62-8482-06f2b072a0ff
+s	java:S106¶"+Replace this use of System.out by a logger.(€ŞÑ»ÿÿÿÿÿ8Ğ„¢ø‚2J$42ef647c-4710-40b9-abe8-19e8fdca4dd4
+m	java:S106·"+Replace this use of System.out by a logger.(ˆ”¿)8ÄĞ¦ø‚2J$6eccc011-9aaf-48bd-b8be-e0e6419a9952
+	java:S125¹"<This block of commented-out lines of code should be removed.(¿¸¼¶8¨Ğ¦ø‚2J$5f2e9af4-0ae1-427a-8b10-2f773bfd8322
+n	java:S106½"+Replace this use of System.out by a logger.(Êß¢«8üºø‚2J$ac0a79f9-d38d-4e78-9b36-d93c6daebbae
+n	java:S106À"+Replace this use of System.out by a logger.(“†µ§8şºø‚2J$d127268f-ad63-47b6-abee-6545bda90a39
+„	java:S125Ã"<This block of commented-out lines of code should be removed.(Øò¤öşÿÿÿÿ8Ù‡Ãø‚2J$1b0dfe29-9b34-43b6-88cf-f3b042cc8374
+s	java:S106Æ"+Replace this use of System.out by a logger.(ï‡ğÂøÿÿÿÿ8€ºø‚2J$94f30b48-fbd6-45f7-a9ad-d844681e92d1
+s	java:S106Ó"+Replace this use of System.out by a logger.(«Ë¾Ôÿÿÿÿÿ8ºø‚2J$68ba4afa-64d1-4ef4-b770-57f628a28886
+s	java:S106Ø"+Replace this use of System.out by a logger.(²’Áÿÿÿÿÿ8ºø‚2J$ba614d25-07d9-482d-b9f7-92eb7f4f1e83
+m	java:S106Ù"+Replace this use of System.out by a logger.(ìâª8ƒºø‚2J$9f3f2896-2466-4517-b443-73dc0370414b
+n	java:S106Û"+Replace this use of System.out by a logger.(Ùéãø8şßÒø‚2J$5bc1f86d-abd7-48e7-85f5-f5fa314952d8
+s
+java:S2093­"*Change this "try" to a try-with-resources.(¡»¢üùÿÿÿÿ8ªÓÖ÷‚2J$dc1b25b4-1d4e-4ade-b771-134db8561722
