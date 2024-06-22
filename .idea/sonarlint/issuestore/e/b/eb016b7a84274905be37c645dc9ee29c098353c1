@@ -1,7 +1,0 @@
-
-@	java:S106'"+Replace this use of System.out by a logger.(¥ÓÚ
-E	java:S1068"+Replace this use of System.out by a logger.(³÷Üìıÿÿÿÿ
-E	java:S106F"+Replace this use of System.out by a logger.(Í©¸Êúÿÿÿÿ
-`
-java:S6201H"JReplace this instanceof check and cast with 'instanceof byte[] peersBytes'(‰ö‡„
-E	java:S106M"+Replace this use of System.out by a logger.(Í©¸Êúÿÿÿÿ
