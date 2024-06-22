@@ -18,3 +18,8 @@ Found replacement for the json file refactored the code , but the issue still re
 
 Peer list got after using com.turn.ttorrent package
 Working on http and announce-list support
+
+
+
+
+//index should be single byte , but I am using int ,need to check on that 
