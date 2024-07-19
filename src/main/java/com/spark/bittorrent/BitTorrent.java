@@ -3,6 +3,7 @@ package com.spark.bittorrent;
 
 import java.nio.*;
 import java.util.List;
+import java.util.Map;
 
 public class BitTorrent {
     
@@ -16,9 +17,18 @@ public class BitTorrent {
         String torrentFilePath = "torrentFIles/big-buck-bunny.torrent";
         String torrentFilePath2 = "torrentFIles/edubuntu-23.10-desktop-amd64.iso.torrent";
         
-        //Peers.getPeers(torrentFilePath);
+        //List<List> peers = Peers.getPeers(torrentFilePath);
         HttpTrackerClient.getPeers("http://torrent.ubuntu.com:6969/announce");
         
+        
+        //downloading from peers
+        //Download.download(peers);
+        
+        Map<String,Object> tParser = Utils.torrentParser("torrentFIles/big-buck-bunny.torrent");
+        
+        Utils.putBlocksInfo(tParser);
+        int lastBlockLen = Integer.parseInt(tParser.get("lastBlockLength").toString());
+        System.out.println(lastBlockLen);
         
     
     }
