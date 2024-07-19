@@ -210,11 +210,13 @@ public class Peers {
               
     }
     
-    public static void getPeers(String torrentFilePath) throws Exception {
+    public static List<List> getPeers(String torrentFilePath) throws Exception {
         DatagramSocket ds = null;
         
         Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
-
+        
+        Utils.putBlocksInfo(tParser);
+        
         // Declare announceArray and portNumbers outside the loop
         String[] announceArray = null;
         List<Integer> portNumbers = new ArrayList<>();
@@ -265,30 +267,11 @@ public class Peers {
             System.out.println("The announce-list is not of the expected type.");
         }
 
-        // Print the announce URLs
-//        System.out.println("Announce URLs with proper port Numbers:");
-//        for (String announce : announceArray) {
-//            System.out.println(announce);
-//        }
-
-        // Print the port numbers
-//        System.out.println("Port Numbers:");
-//        for (int port : portNumbers) {
-//            System.out.println(port);
-//        }
 
             //null is returned in case of error
         String announce_url = Utils.extractHostname(tParser.get("announce").toString());    
         int port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString()));
         String infoNode = tParser.get("info").toString();
-              
-//        System.out.println(announce_url);
-//
-//        announce_url = "tracker.opentrackr.org";
-//        //announce_url = "torrent.ubuntu.com";
-//        port = 1337;
-//
-//        System.out.println(announceArray[1]);
 
         //loop start
         for (int i = 0;i<portNumbers.size();i++)
@@ -328,6 +311,7 @@ public class Peers {
                 if (connResp != 0) {
 
                     byte[] announceBuffer = createAnnounceReq(tParser, torrentFilePath);
+                    
                     InetAddress addr = InetAddress.getByName(announce_url);
                     DatagramPacket announceRequestPacket = new DatagramPacket(announceBuffer, announceBuffer.length, addr, port);
 
@@ -343,6 +327,8 @@ public class Peers {
 
                     System.out.println(peerList);
                     System.out.println(peerList.size());
+                    
+                    return peerList;
                 } else {
                     System.out.println("Connection Error!!!");
                 }
@@ -356,5 +342,7 @@ public class Peers {
             }
             //loop
         }
+        
+        return List.of();
     }
 }

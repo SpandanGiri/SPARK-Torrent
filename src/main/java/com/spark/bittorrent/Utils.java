@@ -26,6 +26,8 @@ import java.util.List;
 public class Utils {
     
     private static String torrentFilePath = "torrentFIles/big-buck-bunny.torrent";
+    public static int blockLength = 16384;
+    
     
     //returns Torrent Parser Object contains info about torrent file
     public static Map<String,Object> torrentParser(String torrentFilePath) throws Exception{
@@ -140,6 +142,33 @@ public class Utils {
         }
         System.out.println(size);
         return size;
+    }
+    
+    //directly puts the blocks and pieces info in torrent parser Map
+    public static Map<String,Object> putBlocksInfo(Map<String,Object>tp){
+        int totalSize = (int)size(tp);
+        int pieceLength = 0 ;
+        Object infoObject = tp.get("info");
+        
+        if (infoObject instanceof Map) {
+            Map<String,Object> infoMap = (Map<String,Object>) infoObject;
+            pieceLength = Integer.parseInt(infoMap.get("piece length").toString());   
+        }
+        
+        int blocksPerPiece = pieceLength/blockLength;
+        int lastPieceIndex = (int)Math.ceil(totalSize/pieceLength);
+        
+        int lastPieceIndexLength = (totalSize%pieceLength == 0)? pieceLength:totalSize%pieceLength;
+        int lastBlockLength = (pieceLength%blockLength ==0) ?    blockLength:pieceLength%blockLength;
+        
+        tp.put("pieceLength", pieceLength);
+        tp.put("blocksPerPiece", blocksPerPiece);
+        tp.put("lastPieceIndex", lastPieceIndex);
+        tp.put("lastPieceIndexLength", lastPieceIndexLength);
+        tp.put("lastBlockLength", lastBlockLength);
+        
+        return tp;
+        
     }
     
     
