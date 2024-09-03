@@ -213,9 +213,28 @@ public class Peers {
     public static List<List> getPeers(String torrentFilePath) throws Exception {
         DatagramSocket ds = null;
         
-        Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
-        
+        Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);      
         Utils.putBlocksInfo(tParser);
+        
+        //check for https or udp 
+        
+        String announce_url = tParser.get("announce").toString();
+        String announce_protocol = Utils.extractProtocol(announce_url);
+        System.out.println("announce protocol "+ announce_protocol);
+        
+        if(announce_protocol.equalsIgnoreCase("http") || announce_protocol.equalsIgnoreCase("https")){
+            List peerList = HttpTrackerClient.getPeers(torrentFilePath, announce_url);
+            return peerList;
+        }
+        else if (announce_protocol.equalsIgnoreCase("udp")){
+            String http_announce_url = Utils.extractHostname(tParser.get("announce").toString());    
+            int http_announce_port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString())); 
+            ds = new DatagramSocket();
+            UdpSend(ds, http_announce_url, http_announce_port);
+        }
+        else{
+            System.out.println("wss protocol not supported currently");
+        }
         
         // Declare announceArray and portNumbers outside the loop
         String[] announceArray = null;
@@ -225,10 +244,11 @@ public class Peers {
         // Retrieve the "announce-list" from the map
         Object announceListObject = tParser.get("announce-list");
 
+        
         if (announceListObject instanceof List) {
             List<List<String>> announceList = (List<List<String>>) announceListObject;
             List<String> flattenedList = new ArrayList<>();
-
+            System.out.println("232");
             // Flatten the nested list structure
             for (List<String> innerList : announceList) {
                 flattenedList.addAll(innerList);
@@ -243,7 +263,7 @@ public class Peers {
                 } else if (url.startsWith("wss://")) {
                     url = url.substring(6);
                 }
-
+               
                 // Extract and remove the port number
                 int colonIndex = url.lastIndexOf(':');
                 if (colonIndex != -1 && colonIndex < url.length() - 1) {
@@ -267,23 +287,27 @@ public class Peers {
             System.out.println("The announce-list is not of the expected type.");
         }
 
-
             //null is returned in case of error
-        String announce_url = Utils.extractHostname(tParser.get("announce").toString());    
+       
         int port = Integer.parseInt(Utils.extractPort(tParser.get("announce").toString()));
+        
         String infoNode = tParser.get("info").toString();
 
+        System.out.println(processedUrls); 
+        System.out.println(portNumbers);
+        
+ 
         //loop start
         for (int i = 0;i<portNumbers.size();i++)
         {
             announce_url = announceArray[i];
             port = portNumbers.get(i);
+            
 
             System.out.println("Sl No: " + (i+1) + " announce url: "+announce_url);
             System.out.println("port: "+port);
             try {
                 ds = new DatagramSocket();
-
                 UdpSend(ds, announce_url, port);
 
                 ds.setSoTimeout(5000);

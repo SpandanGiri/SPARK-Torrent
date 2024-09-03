@@ -14,7 +14,6 @@ import java.util.logging.*;
 import com.dampcake.bencode.Bencode;
 import com.dampcake.bencode.BencodeInputStream;
 import com.dampcake.bencode.Type;
-import static com.spark.bittorrent.Test.bytesToHex;
 import com.turn.ttorrent.bcodec.BDecoder;
 import com.turn.ttorrent.bcodec.BEValue;
 import com.turn.ttorrent.bcodec.BEncoder;
@@ -22,12 +21,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.List;
+import java.io.IOException;  
+import java.io.RandomAccessFile; 
 
 public class Utils {
     
-    private static String torrentFilePath = "torrentFIles/big-buck-bunny.torrent";
     public static int blockLength = 16384;
-    
     
     //returns Torrent Parser Object contains info about torrent file
     public static Map<String,Object> torrentParser(String torrentFilePath) throws Exception{
@@ -47,6 +46,18 @@ public class Utils {
             Map<String, Object> torrentParser = bencode.readDictionary();
             
             return torrentParser;
+    }
+    
+    //returns the protocol of the url
+    public static String extractProtocol(String url) {
+        String regex = "^(udp|http|https|wss)://";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            return matcher.group(1);  // This will return the protocol (e.g., "udp", "http", "https", "wss")
+        } else {
+            return null;  // Return null if no protocol is found
+        }
     }
     
     //returns only the hostname from the announce url
@@ -107,6 +118,7 @@ public class Utils {
             byte[] infoHash = Utils.getSHA1Hash(encodedInfo);
             System.out.println("Info Hash: " + bytesToHex(infoHash));
             return infoHash;
+            
     }
     
     public static byte[] genId()throws Exception{
@@ -159,13 +171,22 @@ public class Utils {
         int lastPieceIndex = (int)Math.ceil(totalSize/pieceLength);
         
         int lastPieceIndexLength = (totalSize%pieceLength == 0)? pieceLength:totalSize%pieceLength;
-        int lastBlockLength = (pieceLength%blockLength ==0) ?    blockLength:pieceLength%blockLength;
+      //  int lastBlockLength = (pieceLength%blockLength ==0) ?    blockLength:pieceLength%blockLength;
+      
+        System.out.println(totalSize + " "+ pieceLength +" " );
+      
+        int lastBlockLength = (lastPieceIndexLength %blockLength ==0) ?    blockLength:lastPieceIndexLength%blockLength;
+        int lastBlockIndex = totalSize/blockLength;
         
         tp.put("pieceLength", pieceLength);
         tp.put("blocksPerPiece", blocksPerPiece);
         tp.put("lastPieceIndex", lastPieceIndex);
+        tp.put("lastBlockIndex",lastBlockIndex);
         tp.put("lastPieceIndexLength", lastPieceIndexLength);
-        tp.put("lastBlockLength", lastBlockLength);
+        //tp.put("lastBlockLength", lastBlockLength);
+        
+        tp.put("lastBlockLength", 16384);
+   
         
         return tp;
         
@@ -190,6 +211,26 @@ public class Utils {
         
         return ip;
     }
+    
+    public static void writeBytesAtOffset(String filePath,byte[] data,int offset){
+        try {  
+            RandomAccessFile file = new RandomAccessFile(filePath, "rw");  
+            file.seek(offset);  
+            file.write(data);  
+            file.close();     
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+        
     
     
 }

@@ -7,7 +7,11 @@ import java.nio.ByteBuffer;
  */
 public class Message {
     
-    public static String torrentFilePath= "torrentFIles/big-buck-bunny.torrent";
+    public static String torrentFilePath;
+    
+    Message(String torrentFilePath){
+        this.torrentFilePath = torrentFilePath;
+    }
     
     public static byte[] buildHandShake() throws Exception{
         ByteBuffer bb = ByteBuffer.allocate(68);
@@ -40,6 +44,8 @@ public class Message {
     */   
 
 public static byte[] buildRequest(int index, int begin, int length) {
+    
+    System.out.println("length requested: "+ length);
     ByteBuffer bb = ByteBuffer.allocate(17);
     
     // length prefix (4 bytes)
