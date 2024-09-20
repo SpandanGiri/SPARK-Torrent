@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.io.IOException;  
 import java.io.RandomAccessFile; 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class Utils {
     
@@ -183,9 +185,9 @@ public class Utils {
         tp.put("lastPieceIndex", lastPieceIndex);
         tp.put("lastBlockIndex",lastBlockIndex);
         tp.put("lastPieceIndexLength", lastPieceIndexLength);
-        //tp.put("lastBlockLength", lastBlockLength);
+        tp.put("lastBlockLength", lastBlockLength);
         
-        tp.put("lastBlockLength", 16384);
+        //tp.put("lastBlockLength", 16384); 
    
         
         return tp;
@@ -231,6 +233,72 @@ public class Utils {
         return sb.toString();
     }
         
+    //saves the filename and file length in a map
+    public static Map<String,Integer> getFileInfoMap(Map<String,Object> tp){
+        
+        Map<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
+ 
+        Object infoObject = tp.get("info");
+        if (infoObject instanceof Map) {
+            Map<String, Object> infoMap = (Map<String, Object>) infoObject;
+            Object filesObject = infoMap.get("files");
+            
+            if (filesObject instanceof List) {
+                List<Map<String, Object>> filesList = (List<Map<String, Object>>) filesObject;
+                
+                int cumFileLength = 0;
+                for (Map<String, Object> file : filesList) {     
+                    Object pathObject = file.get("path");
+
+                    String filename = "";
+                    if (pathObject instanceof List) {
+                        List<String> pathSegments = (List<String>) pathObject;
+                        
+                        filename = String.join("/", pathSegments);
+                    } else {
+                        filename = pathObject.toString();
+                    }
+
+                    Integer fileLength = Integer.parseInt(file.get("length").toString());
+                    cumFileLength +=fileLength;
+                    fileInfo.put(filename, cumFileLength);
+                }
+            }
+        }
+        return fileInfo;
+    }
     
+    public static Map<String,Integer> getFileOffsetMap(Map<String,Object> tp){
+        Map<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
+ 
+        Object infoObject = tp.get("info");
+        if (infoObject instanceof Map) {
+            Map<String, Object> infoMap = (Map<String, Object>) infoObject;
+            Object filesObject = infoMap.get("files");
+            
+            if (filesObject instanceof List) {
+                List<Map<String, Object>> filesList = (List<Map<String, Object>>) filesObject;
+                
+                int cumFileLength = 0;
+                for (Map<String, Object> file : filesList) {     
+                    Object pathObject = file.get("path");
+
+                    String filename = "";
+                    if (pathObject instanceof List) {
+                        List<String> pathSegments = (List<String>) pathObject;
+                        
+                        filename = String.join("/", pathSegments);
+                    } else {
+                        filename = pathObject.toString();
+                    }
+
+                    Integer fileLength = Integer.parseInt(file.get("length").toString());        
+                    fileInfo.put(filename, cumFileLength);
+                    cumFileLength +=fileLength;
+                }
+            }
+        }
+        return fileInfo;
+    }
     
 }

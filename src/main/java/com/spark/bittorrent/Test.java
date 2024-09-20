@@ -25,12 +25,28 @@ public class Test {
     }
     
     public static void main(String[] args) throws Exception{
-        Map<String,Object> tParser = Utils.torrentParser("torrentFIles/ubuntu-16.04.1-server-amd64.iso.torrent");
+        Map<String,Object> tp = Utils.torrentParser("torrentFIles/big-buck-bunny.torrent");
         
+        Map<String,Integer> fileInfo = new HashMap<String,Integer>();
  
-        String announce_url = Utils.extractHostname(tParser.get("announce").toString());
+        Object infoObject = tp.get("info");
+        if (infoObject instanceof Map) {
+            Map<String, Object> infoMap = (Map<String, Object>) infoObject;
+            Object filesObject = infoMap.get("files");
+            
+            if (filesObject instanceof List) {
+                List<Map<String, Object>> filesList = (List<Map<String, Object>>) filesObject;
+                
+                for (Map<String, Object> file : filesList) {     
+                    String filename = file.get("path").toString();
+                    Integer fileLength = Integer.parseInt(file.get("length").toString());
+                    //System.out.println(file);
+                    
+                    fileInfo.put(filename, fileLength);
+                }
+            }
+        }
         
-        System.out.println(announce_url);
-        
+        System.out.println(fileInfo);
     }
 }

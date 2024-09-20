@@ -56,7 +56,7 @@ public class Download {
         //for(int pieceIndex=0;pieceIndex<=lastPieceIndex;pieceIndex++)    requestPieceQueue.add(pieceIndex);
         requestPieceQueue.add(1053);
         requestPieceQueue.add(1054);
-        
+
         
         this.peers = peers;
         
@@ -67,15 +67,26 @@ public class Download {
 //        peers.add(Arrays.asList("109.206.201.132","6881"));
 //        peers.add(Arrays.asList("129.151.173.61","6881"));
 
-        fileOffset.put(0,"Big Buck Bunny.en.srt");
-        fileOffset.put(140,"Big Buck Bunny.mp4");
-        fileOffset.put(276134947,"poster.jpg");
+//        fileOffset.put(0,"Big Buck Bunny.en.srt");
+//        fileOffset.put(140,"Big Buck Bunny.mp4");
+//        fileOffset.put(276134947,"poster.jpg");
         
         fileInfo.put("Big Buck Bunny.en.srt", 140);
 //        fileInfo.put("Big Buck Bunny.mp4", 276134947);
 //        fileInfo.put("poster.jpg",310380);
         fileInfo.put("Big Buck Bunny.mp4", 276135087);
         fileInfo.put("poster.jpg",276445467);
+
+        Map<String,Integer> originalMap = new HashMap<String,Integer>();
+        originalMap = Utils.getFileOffsetMap(tParser);
+        
+        for (Map.Entry<String, Integer> entry : originalMap.entrySet()) {
+            fileOffset.put(entry.getValue(), entry.getKey());
+        }
+        
+        fileInfo = Utils.getFileInfoMap(tParser);
+
+        
         
     }
     
@@ -350,7 +361,7 @@ public class Download {
     
     public static void sendPieceRequest(DataInputStream dis,DataOutputStream ds,int pieceIndex,Map<String,Object> tParser) throws Exception{
         
-        if(receivedPieces.contains(pieceIndex) || pieceIndex==lastPieceIndex+1 )    return;
+        if(receivedPieces.contains(pieceIndex) || pieceIndex==lastPieceIndex+2 )    return;
          
         System.out.println("Requesting blocks for piece:"+ pieceIndex);
         int blockLen = Utils.blockLength;
@@ -363,9 +374,10 @@ public class Download {
             int blockIndex = pieceIndex * 16 + i;
             System.out.println(blockIndex);
             
+            
             if(blockIndex == Integer.parseInt(tParser.get("lastBlockIndex").toString())){
-                System.out.println("last block");
                 int lastBlockLen = Integer.parseInt(tParser.get("lastBlockLength").toString());
+                System.out.println("last block of size :"+ lastBlockLen);
                 requestBlockBytes = Message.buildRequest(pieceIndex,i*blockLen,lastBlockLen);
             }
             else{
@@ -437,6 +449,8 @@ public class Download {
         //System.out.println("lastPieceLength : "+ tParser.get("lastPieceIndexLength"));
         Download.startDownload();
         
+//        System.out.println(fileOffset);
+//        System.out.println(fileInfo);
         
         
         }catch(Exception e){
