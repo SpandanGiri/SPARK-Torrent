@@ -38,7 +38,7 @@ public class Message {
     
 /*
     index > piece index
-    begin > strating index of block
+    begin > strating offset of the block
     length> length of block
     
     */   

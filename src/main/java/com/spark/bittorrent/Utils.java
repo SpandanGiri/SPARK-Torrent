@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile; 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
 public class Utils {
     
@@ -234,9 +235,9 @@ public class Utils {
     }
         
     //saves the filename and file length in a map
-    public static Map<String,Integer> getFileInfoMap(Map<String,Object> tp){
+    public static LinkedHashMap<String,Integer> getFileInfoMap(Map<String,Object> tp){
         
-        Map<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
+        LinkedHashMap<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
  
         Object infoObject = tp.get("info");
         if (infoObject instanceof Map) {
@@ -268,8 +269,8 @@ public class Utils {
         return fileInfo;
     }
     
-    public static Map<String,Integer> getFileOffsetMap(Map<String,Object> tp){
-        Map<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
+    public static LinkedHashMap<String,Integer> getFileOffsetMap(Map<String,Object> tp){
+        LinkedHashMap<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
  
         Object infoObject = tp.get("info");
         if (infoObject instanceof Map) {
@@ -299,6 +300,28 @@ public class Utils {
             }
         }
         return fileInfo;
+    }
+    
+    public static List<List> getmasterInfo(LinkedHashMap<String, Integer>fileOffset,LinkedHashMap<String, Integer>fileInfo){
+        List<List> master= new ArrayList<List>();
+        
+        for(Map.Entry<String,Integer>entry:fileOffset.entrySet()){
+            
+            List list = new ArrayList<>();
+            //l.add(entry.getKey());
+            list.add(entry.getValue());
+            master.add(list);
+        }
+        
+        int index=0;
+        for(Map.Entry<String,Integer>entry:fileInfo.entrySet()){
+            
+            List list = master.get(index++);
+            //l.add(entry.getKey());
+            list.add(entry.getValue());
+            list.add(entry.getKey());
+        }
+        return master;
     }
     
 }

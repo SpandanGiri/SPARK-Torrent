@@ -42,6 +42,9 @@ public class Download {
     
     private static TreeMap<Integer,String> fileOffset = new TreeMap<Integer,String>(); 
     private static Map<String,Integer> fileInfo = new HashMap<String,Integer>(); 
+    private static List<List> masterList = new ArrayList<>();
+    private static int cummulativeFileLength = 0;
+
 
     
     Download(String torrentFilePath,List<List>peers)throws Exception{
@@ -53,9 +56,12 @@ public class Download {
         lastPieceIndex =  Integer.parseInt(tParser.get("lastPieceIndex").toString());
         pieceLength = Integer.parseInt(tParser.get("pieceLength").toString());
         
-        //for(int pieceIndex=0;pieceIndex<=lastPieceIndex;pieceIndex++)    requestPieceQueue.add(pieceIndex);
-        requestPieceQueue.add(1053);
-        requestPieceQueue.add(1054);
+        
+//        for(int pieceIndex=0;pieceIndex<=lastPieceIndex;pieceIndex++)    requestPieceQueue.add(pieceIndex);
+        requestPieceQueue.add(0);
+        requestPieceQueue.add(1);
+//        requestPieceQueue.add(1054);
+
 
         
         this.peers = peers;
@@ -71,31 +77,27 @@ public class Download {
 //        fileOffset.put(140,"Big Buck Bunny.mp4");
 //        fileOffset.put(276134947,"poster.jpg");
         
-        fileInfo.put("Big Buck Bunny.en.srt", 140);
-//        fileInfo.put("Big Buck Bunny.mp4", 276134947);
-//        fileInfo.put("poster.jpg",310380);
-        fileInfo.put("Big Buck Bunny.mp4", 276135087);
-        fileInfo.put("poster.jpg",276445467);
+//        fileInfo.put("Big Buck Bunny.en.srt", 140);
+////        fileInfo.put("Big Buck Bunny.mp4", 276134947);
+////        fileInfo.put("poster.jpg",310380);
+//        fileInfo.put("Big Buck Bunny.mp4", 276135087);
+//        fileInfo.put("poster.jpg",276445467);
 
-        Map<String,Integer> originalMap = new HashMap<String,Integer>();
-        originalMap = Utils.getFileOffsetMap(tParser);
+        LinkedHashMap<String,Integer> fileInfo = Utils.getFileInfoMap(tParser);
+        LinkedHashMap<String,Integer> fileOffset = Utils.getFileOffsetMap(tParser);
         
-        for (Map.Entry<String, Integer> entry : originalMap.entrySet()) {
-            fileOffset.put(entry.getValue(), entry.getKey());
-        }
-        
-        fileInfo = Utils.getFileInfoMap(tParser);
+        masterList = Utils.getmasterInfo(fileOffset, fileInfo);
 
-        
-        
     }
     
-    //will return the next peer
+    //Returns the next peer(List of size 1) from peerList
+    
     private static List nextPeer(){
         if(peerCounter>peers.size()-1)  return peers.get(peerCounter++%(peers.size()));
         return peers.get(peerCounter++);
     }
     
+    // Uses a asynchronusly calls the downloadPeer function for every peer
     public static void startDownload()throws Exception{
         
         if(!peers.isEmpty()){            
@@ -117,14 +119,19 @@ public class Download {
         executorService.shutdown();
     }
     
+    /*Starts the download of pieces from a peer ip 
+    It establishes a connection with the peer and keep requesting for the pieces
+    that comes in order from the requestPieceQueue
+    */
+    
     public static void downloadPeer(String ip,int port,Map<String,Object> tParser){
         
         try{
         Message m = new Message(torrentFilePath);
         System.out.println("Requesting pieces from " + "ip: "+ ip +" port: "+port);
-        InetAddress Ipaddr = InetAddress.getByName(ip);
+        InetAddress Ipaddr = InetAddress.getByName(ip);     //Converting the String to a usable IP fpr Socket
         
-        Socket ss = new Socket(Ipaddr,port);
+        Socket ss = new Socket(Ipaddr,port);    
         ss.setSoTimeout(5000);
        
         DataOutputStream ds = new DataOutputStream(ss.getOutputStream());
@@ -146,9 +153,7 @@ public class Download {
                 break;
             }
         }
-        
-        
-        
+               
         ss.close();    
         }catch(Exception e){
             e.printStackTrace();
@@ -166,6 +171,7 @@ public class Download {
         }    
     }
  
+    // Calls the the downloadPeer function for the next peer in peerList
     public static void downloadNextPeer(){
         
         List<String> ipList = nextPeer();
@@ -175,8 +181,11 @@ public class Download {
         downloadPeer(nextIp,nextPort,tParser);      
     }
  
+    /*Extracts the message id form the peerResponse and sends it to the respective Handler
+    */
+    
+    
     public static void msgHandler(byte[] peerResponse,DataOutputStream ds,DataInputStream dis,Map<String,Object> tParser)throws Exception{
-
         System.out.println("Inside Message Handler");  
         //First check for handshake message 
         
@@ -210,7 +219,7 @@ public class Download {
                 bitfieldHandler(peerResponse);
             }          
             else if(messageId==7){
-                pieceHandler(peerResponse);
+                pieceHandler2(peerResponse);
             }
             else{
                 System.out.println("Unkown messageId : "+messageId);
@@ -218,6 +227,7 @@ public class Download {
         }
     }
     
+    // After successful handshake , interested message is being created using buildInterested and sent to the peer
     public static void handshakeHandler(DataOutputStream ds)throws Exception{
         System.out.println("Inside Handshake Handler");
         
@@ -226,10 +236,19 @@ public class Download {
         System.out.println("Interested message sent to peer: ");   
     }
     
+    // If peer has choked  we will drop the connection
     public static void chokeHandler(){
         System.out.println("Choked");         
     }
     
+    /*
+    
+    *   Eveyrhing is sorted with the peers before we start requesting for pieces
+    *   Using the sendPieceRequest to send the request for the first piece in the queue
+    *   The queue is dynamically updated if the piece donwload fails it will be readded at the very end of the queue
+    *   We are using a common queue for all.
+    
+    */
     public static void unChokeHandler(DataOutputStream ds,DataInputStream dis,Map<String,Object> tParser) throws Exception{
         System.out.println("Inside Unchoke handler");
         
@@ -259,6 +278,9 @@ public class Download {
         System.out.println("Inside Have handler");
     }
     
+    // It prints the bitfiel message only we can further use its scope for devloping the request queue but for that we
+    // would require a seperate queue for all the peer
+    
     public static void bitfieldHandler(byte[] peerResponse){
         
         System.out.println("Inside BitfieldHandler handler");
@@ -280,6 +302,7 @@ public class Download {
         }
     }
     
+    
     public static boolean isHandShake(byte[] handShakeResponseByte)throws Exception{
         byte[] peerPtrlStrByte = Arrays.copyOfRange(handShakeResponseByte, 1, 20);
         String peerPtrlStr = new String(peerPtrlStrByte,"UTF-8");
@@ -288,20 +311,67 @@ public class Download {
         return peerPtrlStr.equals("BitTorrent protocol"); 
     }
     
+    
+    
+    public static void pieceHandler2(byte[] pieceResponse){
+        System.out.println("pieceResp len :" + pieceResponse.length);
+        byte[] pieceIndexByte = Arrays.copyOfRange(pieceResponse, 5, 9);    //pieceIndex
+        byte[] beginByte = Arrays.copyOfRange(pieceResponse, 9, 13);    //offset
+        byte[] blockBytes = Arrays.copyOfRange(pieceResponse, 13, (pieceResponse.length)-1);    //block data
+         
+        ByteBuffer respPieceWrapped = ByteBuffer.wrap(pieceIndexByte);
+        ByteBuffer beginByteWrapped = ByteBuffer.wrap(beginByte);
+        
+        int respPieceIndex = respPieceWrapped.getInt();        //converting pieceIndex from bytes to int 
+        int beginOffset = beginByteWrapped.getInt();            //converting begin offset from bytes to int
+        
+        int globalOffset = (pieceLength * respPieceIndex) + beginOffset;    //starting offset of the stream of bytes
+        int blockLength = Utils.blockLength;
+        
+        for (int j = 0; j < masterList.size(); j++) {
+            Integer startValue = (Integer) masterList.get(j).get(0);
+            Integer endValue = (Integer) masterList.get(j).get(1);
+            String filename = (String) masterList.get(j).get(2);
+
+            // Calculate blockEnding based on the current globalOffset
+            int blockEnding = globalOffset + blockLength;
+
+            // Check if the block falls within the current file range
+            if (globalOffset < endValue && blockEnding > startValue) {
+                // Calculate local start and end for this file
+                int localStart = Math.max(0, globalOffset - startValue);
+                int localEnd = Math.min(blockEnding - startValue, endValue - startValue);
+
+                // Adjust blockBytes slice for the part that belongs to this file
+                int startInBlock = Math.max(0, startValue - globalOffset);
+                int lengthToWrite = localEnd - localStart;
+                byte[] dataToWrite = Arrays.copyOfRange(blockBytes, startInBlock, startInBlock + lengthToWrite);
+
+                // Write to the file (pseudo-code for writing bytes to file)
+                System.out.println("Copying to " + filename + " from local offset " + localStart + " to " + localEnd);
+                Utils.writeBytesAtOffset(filename,dataToWrite,localStart);  // You need to implement this method
+            }
+        }
+
+    }
+    /*
+    
+    */
     public static void pieceHandler(byte[] pieceResponse){
         
         System.out.println("pieceResp len :" + pieceResponse.length);
         byte[] pieceIndexByte = Arrays.copyOfRange(pieceResponse, 5, 9);    //pieceIndex
         byte[] beginByte = Arrays.copyOfRange(pieceResponse, 9, 13);    //offset
-        byte[] blockBytes = Arrays.copyOfRange(pieceResponse, 13, (pieceResponse.length)-1);    //block
+        byte[] blockBytes = Arrays.copyOfRange(pieceResponse, 13, (pieceResponse.length)-1);    //block data
          
         ByteBuffer respPieceWrapped = ByteBuffer.wrap(pieceIndexByte);
         ByteBuffer beginByteWrapped = ByteBuffer.wrap(beginByte);
         
-        int respPieceIndex = respPieceWrapped.getInt();
-        int beginOffset = beginByteWrapped.getInt();
+        int respPieceIndex = respPieceWrapped.getInt();        //converting pieceIndex from bytes to int 
+        int beginOffset = beginByteWrapped.getInt();            //converting begin offset from bytes to int
+        
         int globalOffset = (pieceLength * respPieceIndex) + beginOffset;    //starting offset of the stream of bytes
-        int i = fileOffset.floorKey(globalOffset);
+        //int i = fileOffset.floorKey(globalOffset);
         int localOffset = 0;
         
         String targetFile = fileOffset.get(fileOffset.floorKey(globalOffset));  //find the file 
@@ -317,8 +387,8 @@ public class Download {
         if(targetFileLength < globalOffset + Utils.blockLength){
             //write the file till the targetFileLength
             
-            //int endOffset = targetFileLength - localOffset;     //how much of bytes are  left till targetFile
-            int endOffset = 15675;
+            int endOffset = targetFileLength - localOffset;     //how much of bytes are  left till targetFile
+            //int endOffset = 15675;
             System.out.println(pieceResponse.length);
             System.out.println("endOffset: "+endOffset);
             
@@ -359,6 +429,10 @@ public class Download {
     }
 
     
+    /*
+    Sends all the block request for a piece Index to the peer 
+    
+    */
     public static void sendPieceRequest(DataInputStream dis,DataOutputStream ds,int pieceIndex,Map<String,Object> tParser) throws Exception{
         
         if(receivedPieces.contains(pieceIndex) || pieceIndex==lastPieceIndex+2 )    return;
@@ -370,11 +444,11 @@ public class Download {
             
             byte[] requestBlockBytes;
             
-            //for last block
+            
             int blockIndex = pieceIndex * 16 + i;
             System.out.println(blockIndex);
             
-            
+            //for last block
             if(blockIndex == Integer.parseInt(tParser.get("lastBlockIndex").toString())){
                 int lastBlockLen = Integer.parseInt(tParser.get("lastBlockLength").toString());
                 System.out.println("last block of size :"+ lastBlockLen);
@@ -409,7 +483,7 @@ public class Download {
                 break;
             } else {
                 byte[] pieceResponse = pieceResponseStream.toByteArray();
-                pieceHandler(pieceResponse);
+                pieceHandler2(pieceResponse);
                 
                 if(i==blocksPerPiece-1){
                     receivedPieces.add(pieceIndex);
@@ -433,17 +507,16 @@ public class Download {
     public static void main(String args[]){
         List<List> peerList = new ArrayList();
         
-//        peers.add(Arrays.asList("129.151.173.61","6881"));
-        peers.add(Arrays.asList("129.151.215.49","6881"));
-//        peers.add(Arrays.asList("188.6.133.191","6881"));
-//        peers.add(Arrays.asList("123.201.8.164","6881"));
+
+        //peers.add(Arrays.asList("82.64.19.12","56321"));
+
         
         try{ 
-        Map<String,Object> tParser = Utils.torrentParser("torrentFIles/big-buck-bunny.torrent");
+        Map<String,Object> tParser = Utils.torrentParser("torrentFIles/sintel.torrent");
         
         Utils.putBlocksInfo(tParser);
         
-        Download d = new Download("torrentFIles/big-buck-bunny.torrent",peers);
+        Download d = new Download("torrentFIles/sintel.torrent",peers);
         //d.downloadPeer(ip,port,tParser);
         //System.out.println("lastBlockLength : "+ tParser.get("lastBlockLength"));
         //System.out.println("lastPieceLength : "+ tParser.get("lastPieceIndexLength"));
