@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-
 public class BitTorrent {
     
     public static int serverPort = 998;
@@ -16,27 +15,38 @@ public class BitTorrent {
 
     public static void main(String[] args)throws Exception{
                
-        //String torrentFilePath = "torrentFIles/big-buck-bunny.torrent";
-        String torrentFilePath = "torrentFIles/sintel.torrent";
-        String torrentFilePath2 = "torrentFIles/ubuntu-16.04.1-server-amd64.iso.torrent";
-              
+        BitTorrentWindow torrentWindow = new BitTorrentWindow();
+        String torrentFilePath;
+        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                torrentWindow.setVisible(true);
+            }
+        });
+        
+        
+        while(torrentWindow.filepath.isEmpty()){
+            Thread.sleep(100);
+        }
+        
+        torrentFilePath = torrentWindow.filepath;
+       
+//        torrentFilePath = "torrentFIles/sintel.torrent";
+        System.out.println("FilePath: "+torrentFilePath);
+                
         List<List>peers = Peers.getPeers(torrentFilePath);
        
         //downloading from peers
-        
         Map<String,Object> tParser = Utils.torrentParser(torrentFilePath);
         Utils.putBlocksInfo(tParser);
         
         LinkedHashMap<String,Integer> fileInfoMap = Utils.getFileInfoMap(tParser);
-        //System.out.println(fileInfoMap);
-        
+
         LinkedHashMap<String,Integer> fileOffsetMap = Utils.getFileOffsetMap(tParser);
-        //System.out.println(fileOffsetMap);
-        
+             
         List<List> masterList = Utils.getmasterInfo(fileOffsetMap, fileInfoMap);
         
         System.out.println(masterList);
-        
         
         Download d = new Download(torrentFilePath,peers);
         Download.startDownload();

@@ -98,6 +98,11 @@ public class Utils {
         }
     }
 
+    /*
+    returns the infoHash of the the torrent File using com.turn.ttorrent.bcodec 
+    Created a sha1 hash of the info part of the torrent file
+    */
+    
     public static byte[] getInfoHash(String torrentFilePath) throws Exception{
             
             // Read the torrent file
@@ -139,6 +144,7 @@ public class Utils {
         return clientCodeByte;
     } 
     
+    //Returns the total size of all the files in bytes
     public static long size(Map<String,Object>tp) {
         long size = 0;
         Object infoObject = tp.get("info");
@@ -215,6 +221,7 @@ public class Utils {
         return ip;
     }
     
+    //copies bytes to the traget file strating from offset , ued in writing the file 
     public static void writeBytesAtOffset(String filePath,byte[] data,int offset){
         try {  
             RandomAccessFile file = new RandomAccessFile(filePath, "rw");  
@@ -234,7 +241,8 @@ public class Utils {
         return sb.toString();
     }
         
-    //saves the filename and file length in a map
+    //saves the filename and cummulative file ending in Map
+    //Linked Hash Map is used to maintain the order
     public static LinkedHashMap<String,Integer> getFileInfoMap(Map<String,Object> tp){
         
         LinkedHashMap<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
@@ -269,6 +277,8 @@ public class Utils {
         return fileInfo;
     }
     
+    //saves the filename and cummulative file  starting in Map 
+    //Linked Hash Map is used to maintain the order
     public static LinkedHashMap<String,Integer> getFileOffsetMap(Map<String,Object> tp){
         LinkedHashMap<String, Integer> fileInfo = new LinkedHashMap<String, Integer>();
  
@@ -302,6 +312,8 @@ public class Utils {
         return fileInfo;
     }
     
+    //combins the fileoffset and fileINfo map 
+    //will comine the getFIleInfoMap and getFIleOffsetMap to this function
     public static List<List> getmasterInfo(LinkedHashMap<String, Integer>fileOffset,LinkedHashMap<String, Integer>fileInfo){
         List<List> master= new ArrayList<List>();
         
@@ -317,7 +329,6 @@ public class Utils {
         for(Map.Entry<String,Integer>entry:fileInfo.entrySet()){
             
             List list = master.get(index++);
-            //l.add(entry.getKey());
             list.add(entry.getValue());
             list.add(entry.getKey());
         }

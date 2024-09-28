@@ -55,34 +55,13 @@ public class Download {
         blocksPerPiece = Integer.parseInt(tParser.get("blocksPerPiece").toString());
         lastPieceIndex =  Integer.parseInt(tParser.get("lastPieceIndex").toString());
         pieceLength = Integer.parseInt(tParser.get("pieceLength").toString());
-        
-        
-//        for(int pieceIndex=0;pieceIndex<=lastPieceIndex;pieceIndex++)    requestPieceQueue.add(pieceIndex);
-        requestPieceQueue.add(0);
-        requestPieceQueue.add(1);
-//        requestPieceQueue.add(1054);
+                
+        for(int pieceIndex=0;pieceIndex<=lastPieceIndex;pieceIndex++)    requestPieceQueue.add(pieceIndex);
 
-
-        
         this.peers = peers;
         
         //Adding some peers for testing 
         
-//        peers.add(Arrays.asList("129.151.215.49","6881"));
-//        peers.add(Arrays.asList("185.252.232.129","9358"));
-//        peers.add(Arrays.asList("109.206.201.132","6881"));
-//        peers.add(Arrays.asList("129.151.173.61","6881"));
-
-//        fileOffset.put(0,"Big Buck Bunny.en.srt");
-//        fileOffset.put(140,"Big Buck Bunny.mp4");
-//        fileOffset.put(276134947,"poster.jpg");
-        
-//        fileInfo.put("Big Buck Bunny.en.srt", 140);
-////        fileInfo.put("Big Buck Bunny.mp4", 276134947);
-////        fileInfo.put("poster.jpg",310380);
-//        fileInfo.put("Big Buck Bunny.mp4", 276135087);
-//        fileInfo.put("poster.jpg",276445467);
-
         LinkedHashMap<String,Integer> fileInfo = Utils.getFileInfoMap(tParser);
         LinkedHashMap<String,Integer> fileOffset = Utils.getFileOffsetMap(tParser);
         
@@ -96,13 +75,13 @@ public class Download {
         if(peerCounter>peers.size()-1)  return peers.get(peerCounter++%(peers.size()));
         return peers.get(peerCounter++);
     }
-    
+     
     // Uses a asynchronusly calls the downloadPeer function for every peer
     public static void startDownload()throws Exception{
         
         if(!peers.isEmpty()){            
             System.out.println("Inside Download function");
-            for(List peer:peers){
+            for(List peer:peers){ 
                 String ip = peer.get(0).toString();
                 int port = Integer.parseInt(peer.get(1).toString());
                 executorService.submit(()->{
@@ -328,10 +307,11 @@ public class Download {
         int globalOffset = (pieceLength * respPieceIndex) + beginOffset;    //starting offset of the stream of bytes
         int blockLength = Utils.blockLength;
         
+        
         for (int j = 0; j < masterList.size(); j++) {
             Integer startValue = (Integer) masterList.get(j).get(0);
             Integer endValue = (Integer) masterList.get(j).get(1);
-            String filename = (String) masterList.get(j).get(2);
+             String filename = (String) masterList.get(j).get(2);
 
             // Calculate blockEnding based on the current globalOffset
             int blockEnding = globalOffset + blockLength;
@@ -507,24 +487,13 @@ public class Download {
     public static void main(String args[]){
         List<List> peerList = new ArrayList();
         
-
-        //peers.add(Arrays.asList("82.64.19.12","56321"));
-
-        
         try{ 
         Map<String,Object> tParser = Utils.torrentParser("torrentFIles/sintel.torrent");
         
         Utils.putBlocksInfo(tParser);
         
         Download d = new Download("torrentFIles/sintel.torrent",peers);
-        //d.downloadPeer(ip,port,tParser);
-        //System.out.println("lastBlockLength : "+ tParser.get("lastBlockLength"));
-        //System.out.println("lastPieceLength : "+ tParser.get("lastPieceIndexLength"));
         Download.startDownload();
-        
-//        System.out.println(fileOffset);
-//        System.out.println(fileInfo);
-        
         
         }catch(Exception e){
             e.printStackTrace();

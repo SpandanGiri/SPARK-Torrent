@@ -22,9 +22,6 @@ public class HttpTrackerClient {
             byte[] infoHashBytes = Utils.getInfoHash(torrentFilePath);
             String infoHash = Utils.bytesToHex(infoHashBytes);
             
-            //String infoHash = "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c";
-            //String infoHash = "dee86a7fa6f286a9d74c362014616a0ff5e4843d";
-            
             String peerId = "-TR2940-6wfG2wk6wFOl";  // Example peer ID, use a unique one for your client
             int port = 6881;
             long uploaded = 0;
