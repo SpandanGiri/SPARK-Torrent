@@ -41,31 +41,29 @@ Open a terminal or command prompt and run the following command to clone the SPA
 ```bash
 git clone https://github.com/SpandanGiri/SPARK-Torrent.git
 ```
-
 2. **Navigate to the Project Directory**
 
-Change the directory to the project's `src/main/java` folder:
+Change the directory to the root project folder where the pom.xml file is located:
 ```bash
-cd SPARK-Torrent/src/main/java/com/spark/bittorrent
+cd SPARK-Torrent
 ```
-
-3. **Compile the Java Files**
+3. **Build the Project**
 
 Use the following command to compile all the Java files:
 ```bash
 javac *.java
 ```
-
 4. **Run the Application**
 
-Once compiled, you can run the SPARK-Torrent application by executing the main class. Use the following command:
+Use Maven to build the project by running:
 ```bash
-java com.spark.bittorrent.Main
+mvn clean install
 ```
+This will compile the project, download any necessary dependencies, and package the application.
 
 5. **Using the Application**
 
-After running the application, follow the on-screen instructions to load a torrent file and start downloading or seeding content.
+After running the application, follow the on-screen instructions to load a torrent file and start downloading the content.
 
 ## Contributing
 We welcome contributions to improve SPARK-Torrent. To contribute:
