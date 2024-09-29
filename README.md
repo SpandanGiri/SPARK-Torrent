@@ -23,7 +23,7 @@ To start the SPARK-Torrent project in java IDE's such as NetBeans/IntelliJ IDEA,
 
 3. **Run the Project:**
    - Once the file is open, run the project from the menu.
-   - In the GUI that appears, paste the path of your `.torrent` file and press `Enter` to start the download.
+   - In the GUI that appears, paste the path of your `.torrent` file and click `Submit` in the BitTorrent Window to start the download.
 
 ### Using Command Line
 
