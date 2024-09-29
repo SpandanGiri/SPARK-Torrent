@@ -49,17 +49,19 @@ cd SPARK-Torrent
 ```
 3. **Build the Project**
 
-Use the following command to compile all the Java files:
-```bash
-javac *.java
-```
-4. **Run the Application**
-
 Use Maven to build the project by running:
 ```bash
 mvn clean install
 ```
 This will compile the project, download any necessary dependencies, and package the application.
+
+4. **Run the Application**
+
+Once the project is built, you can run the application using the following Maven command:
+```bash
+mvn exec:java -Dexec.mainClass="com.spark.bittorrent.Main"
+```
+Replace "com.spark.bittorrent.Main" with the appropriate class if the main class name differs.
 
 5. **Using the Application**
 
