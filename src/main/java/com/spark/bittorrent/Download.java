@@ -313,25 +313,23 @@ public class Download {
             Integer endValue = (Integer) masterList.get(j).get(1);
              String filename = (String) masterList.get(j).get(2);
 
-            // Calculate blockEnding based on the current globalOffset
+            
             int blockEnding = globalOffset + blockLength;
-
-            // Check if the block falls within the current file range
+            // Check block falls within  current file range
             if (globalOffset < endValue && blockEnding > startValue) {
                 // Calculate local start and end for this file
                 int localStart = globalOffset - startValue;
                 int localEnd = Math.min(blockEnding - startValue, endValue - startValue);
-//
-//                // Adjust blockBytes slice for the part that belongs to this file
+
+                // Adjust blockBytes slice for the part that belongs to this file
                 int startInBlock = Math.max(0, startValue - globalOffset);
-//                int lengthToWrite = localEnd - localStart;
+                //int lengthToWrite = localEnd - localStart;
 
                 int lengthToWrite = Math.min(blockEnding - globalOffset , endValue - globalOffset);
                 byte[] dataToWrite = Arrays.copyOfRange(blockBytes, startInBlock, startInBlock + lengthToWrite);
 
-                // Write to the file (pseudo-code for writing bytes to file)
                 System.out.println("Copying to " + filename + " from local offset " + localStart + " to " + localEnd);
-                Utils.writeBytesAtOffset(filename,dataToWrite,localStart);  // You need to implement this method
+                Utils.writeBytesAtOffset(filename,dataToWrite,localStart); 
             }
         }
 
@@ -479,9 +477,7 @@ public class Download {
         List<String> ipList = nextPeer();
         String ip = ipList.get(0);
         int port = Integer.parseInt(ipList.get(1));
-        
-        //downloadPeer(ip,port,tParser);
-        
+               
         sendPieceRequest(dis,ds,requestPieceQueue.get(0),tParser);
  
     }
