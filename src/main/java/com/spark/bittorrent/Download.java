@@ -319,12 +319,14 @@ public class Download {
             // Check if the block falls within the current file range
             if (globalOffset < endValue && blockEnding > startValue) {
                 // Calculate local start and end for this file
-                int localStart = Math.max(0, globalOffset - startValue);
+                int localStart = globalOffset - startValue;
                 int localEnd = Math.min(blockEnding - startValue, endValue - startValue);
-
-                // Adjust blockBytes slice for the part that belongs to this file
+//
+//                // Adjust blockBytes slice for the part that belongs to this file
                 int startInBlock = Math.max(0, startValue - globalOffset);
-                int lengthToWrite = localEnd - localStart;
+//                int lengthToWrite = localEnd - localStart;
+
+                int lengthToWrite = Math.min(blockEnding - globalOffset , endValue - globalOffset);
                 byte[] dataToWrite = Arrays.copyOfRange(blockBytes, startInBlock, startInBlock + lengthToWrite);
 
                 // Write to the file (pseudo-code for writing bytes to file)
