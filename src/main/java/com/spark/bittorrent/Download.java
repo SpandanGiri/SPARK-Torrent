@@ -315,21 +315,20 @@ public class Download {
 
             
             int blockEnding = globalOffset + blockLength;
-            // Check block falls within  current file range
+            //  Check block falls within  current file range
+
             if (globalOffset < endValue && blockEnding > startValue) {
+                
                 // Calculate local start and end for this file
-                int localStart = globalOffset - startValue;
+                int localStart = Math.max(0, globalOffset - startValue);
                 int localEnd = Math.min(blockEnding - startValue, endValue - startValue);
-
-                // Adjust blockBytes slice for the part that belongs to this file
+                
                 int startInBlock = Math.max(0, startValue - globalOffset);
-                //int lengthToWrite = localEnd - localStart;
-
-                int lengthToWrite = Math.min(blockEnding - globalOffset , endValue - globalOffset);
+                int lengthToWrite = localEnd - localStart;
                 byte[] dataToWrite = Arrays.copyOfRange(blockBytes, startInBlock, startInBlock + lengthToWrite);
-
+                
                 System.out.println("Copying to " + filename + " from local offset " + localStart + " to " + localEnd);
-                Utils.writeBytesAtOffset(filename,dataToWrite,localStart); 
+                Utils.writeBytesAtOffset(filename,dataToWrite,localStart);  // You need to implement this method
             }
         }
 
@@ -351,7 +350,7 @@ public class Download {
         int beginOffset = beginByteWrapped.getInt();            //converting begin offset from bytes to int
         
         int globalOffset = (pieceLength * respPieceIndex) + beginOffset;    //starting offset of the stream of bytes
-        //int i = fileOffset.floorKey(globalOffset);
+        
         int localOffset = 0;
         
         String targetFile = fileOffset.get(fileOffset.floorKey(globalOffset));  //find the file 
